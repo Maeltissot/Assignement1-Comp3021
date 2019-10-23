@@ -34,8 +34,7 @@ class CellStack {
         // TODO - DONE
         FillableCell popedCell = null;
         if(cellStack.size()==0) return null;
-        popedCell = cellStack.peek();
-        count++;
+        popedCell = cellStack.pop();
         return popedCell;
     }
 

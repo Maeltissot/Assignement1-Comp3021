@@ -124,7 +124,7 @@ class PipeQueue {
      */
     @NotNull private static Pipe generateNewPipe() {
         // TODO - DONE
-        int x = new Random().nextInt(6);
+        int x = new Random().nextInt(7);
         switch(x){
             case 0:
                 return new Pipe(Pipe.Shape.BOTTOM_LEFT);

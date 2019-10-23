@@ -46,13 +46,15 @@ public class Pipe implements MapElement {
      */
     public @NotNull Direction[] getConnections() {
         // TODO - DONE
-        Direction[] connections= new Direction[2];
+        Direction[] connections;
         switch (shape.getCharByState(true)){
             case PipePatterns.Filled.BOTTOM_LEFT:
+                connections= new Direction[2];
                 connections[0] = Direction.DOWN;
                 connections[1] = Direction.LEFT;
                 break;
             case PipePatterns.Filled.BOTTOM_RIGHT:
+                connections= new Direction[2];
                 connections[0] = Direction.RIGHT;
                 connections[1] = Direction.DOWN;
                 break;
@@ -64,18 +66,22 @@ public class Pipe implements MapElement {
                 connections[3] = Direction.UP;
                 break;
             case PipePatterns.Filled.HORIZONTAL:
+                connections= new Direction[2];
                 connections[0] = Direction.LEFT;
                 connections[1] = Direction.RIGHT;
                 break;
             case PipePatterns.Filled.TOP_LEFT:
+                connections= new Direction[2];
                 connections[0] = Direction.LEFT;
                 connections[1] = Direction.UP;
                 break;
             case PipePatterns.Filled.TOP_RIGHT:
+                connections= new Direction[2];
                 connections[0] = Direction.RIGHT;
                 connections[1] = Direction.UP;
                 break;
             case PipePatterns.Filled.VERTICAL:
+                connections= new Direction[2];
                 connections[0] = Direction.UP;
                 connections[1] = Direction.DOWN;
                 break;

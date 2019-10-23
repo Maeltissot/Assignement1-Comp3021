@@ -219,17 +219,16 @@ public class Map {
      * @return {@code true} if the pipe is placed in the cell, {@code false} otherwise.
      */
     boolean tryPlacePipe(int row, int col, @NotNull Pipe p) {
-        // DONE
+        // TODO -  DONE
         if(row>cells.length || col>cells[0].length) {
             return false;
         }
         if(cells[row][col] instanceof FillableCell){
             FillableCell fillableCell = (FillableCell)this.cells[row][col];
-            if(fillableCell.toSingleChar() == '.'){
                 Coordinate coord = new Coordinate(row,col);
                 this.cells[row][col] = new FillableCell(coord,p);
                 return true;
-            }
+
         }
         return false;
     }
@@ -281,8 +280,12 @@ public class Map {
      * @throws IllegalArgumentException if the cell is not an instance of {@link FillableCell}.
      */
     public void undo(@NotNull final Coordinate coord) {
-        // DONE
-        this.cells[coord.row][coord.col] = new FillableCell(coord);
+        // TODO - DONE
+        if(cells[coord.row][coord.col] instanceof FillableCell){
+            this.cells[coord.row][coord.col] = new FillableCell(coord);
+        } else{
+            throw new IllegalArgumentException("This is not a valid cell");
+        }
     }
 
     /**
@@ -313,6 +316,7 @@ public class Map {
         for (Direction dir : firstFillCell.getPipe().orElseThrow().getConnections()) {
             if (dir.equals(sourceCell.pointingTo.getOpposite())) {
                 if (firstFillCell.getPipe().orElseThrow().getFilled() == false) {
+                    firstFillCell.getPipe().orElseThrow().setFilled();
                     filledTurn = true;
                 } else {
                     filledTurn = false;
@@ -335,7 +339,8 @@ public class Map {
                 for (Direction dir:directionsC) {
                     if(cells[fillCell.coord.row + dir.getOffset().row][fillCell.coord.col + dir.getOffset().col] instanceof TerminationCell){
                         TerminationCell fillCellnext = (TerminationCell) cells[fillCell.coord.row + dir.getOffset().row][fillCell.coord.col + dir.getOffset().col];
-                        if (fillCellnext.pointingTo.equals(dir.getOpposite())){
+                        if (fillCellnext.pointingTo.equals(dir)){
+                            fillCellnext.setFilled();
                             filledTurn = true;
                         }
                     }
@@ -345,6 +350,7 @@ public class Map {
                                if (!fillCellnext.getPipe().orElseThrow().getFilled()) {
                                    for (Direction dirNext : fillCellnext.getPipe().orElseThrow().getConnections()) {
                                         if (dirNext.equals(dir.getOpposite()) && !inDir.equals(dir.getOpposite())) {
+                                            System.out.println("recursive distance:filled 1 cell");
                                             filledTurn = true;
                                             recursiveFill(distance, distanceCounter, dirNext.getOpposite(), fillCellnext);
                                        }
@@ -354,6 +360,7 @@ public class Map {
                             else if (fillCellnext.getPipe().orElseThrow().getFilled()) {
                                     for (Direction dirNext : fillCellnext.getPipe().orElseThrow().getConnections()) {
                                         if (dirNext.equals(dir.getOpposite()) && !inDir.equals(dir.getOpposite())) {
+                                            filledTurn = false;
                                             recursiveFill(distance, distanceCounter, dirNext.getOpposite(), fillCellnext);
                                         }
                                     }
@@ -384,7 +391,9 @@ public class Map {
         ArrayList<Cell> visitedCells = new ArrayList<Cell>();
         ArrayList<Cell> nextCells = new ArrayList<Cell>();
         if(firstFillCell.toSingleChar()!='.'){
+            System.out.println("CheckPath found first cell");
             nextCells.add(firstFillCell);
+            visitedCells.add(sourceCell);
         }
         while (!nextCells.isEmpty()){
 
@@ -393,31 +402,29 @@ public class Map {
                 Direction[] directionsC = fillCell.getPipe().orElseThrow().getConnections();
 
                 for (Direction dir:directionsC) {
-                    if(fillCell.coord.row + dir.getOffset().row<cells.length
-                            && fillCell.coord.row + dir.getOffset().row>0
-                            && fillCell.coord.col + dir.getOffset().col<cells[0].length
-                            && fillCell.coord.col + dir.getOffset().col>0
-                            && cells[fillCell.coord.row + dir.getOffset().row][fillCell.coord.col + dir.getOffset().col] instanceof FillableCell
-                            && cells[fillCell.coord.row + dir.getOffset().row][fillCell.coord.col + dir.getOffset().col] instanceof TerminationCell
-                    )
-                    {
-                        if(cells[fillCell.coord.row + dir.getOffset().row][fillCell.coord.col + dir.getOffset().col] instanceof TerminationCell){
-                            TerminationCell fillCellnext = (TerminationCell)cells[fillCell.coord.row + dir.getOffset().row][fillCell.coord.col + dir.getOffset().col];
-                            if(!visitedCells.contains(fillCellnext) && !nextCells.contains(fillCellnext) && dir.getOpposite()==fillCellnext.pointingTo){
+
+                        if (cells[fillCell.coord.row + dir.getOffset().row][fillCell.coord.col + dir.getOffset().col] instanceof TerminationCell) {
+                            TerminationCell fillCellnext = (TerminationCell) cells[fillCell.coord.row + dir.getOffset().row][fillCell.coord.col + dir.getOffset().col];
+                            if (!visitedCells.contains(fillCellnext) && !nextCells.contains(fillCellnext) && dir == fillCellnext.pointingTo && fillCellnext.type!= TerminationCell.Type.SOURCE) {
+                                System.out.println("CheckPath found termcellout");
+                                nextCells.add(sinkCell);
                                 return true;
                             }
-                        } else{
-                            FillableCell fillCellnext = (FillableCell)cells[fillCell.coord.row + dir.getOffset().row][fillCell.coord.col + dir.getOffset().col];
-                            if(!visitedCells.contains(fillCellnext) && !nextCells.contains(fillCellnext) && fillCellnext.getPipe().orElseThrow().toSingleChar()!='.'){
-                                for (Direction dirNext: fillCellnext.getPipe().orElseThrow().getConnections()) {
-                                    if(dirNext.equals(dir.getOpposite())){
-                                        nextCells.add(fillCellnext);
+                        } else if (cells[fillCell.coord.row + dir.getOffset().row][fillCell.coord.col + dir.getOffset().col] instanceof FillableCell) {
+                            FillableCell fillCellnext = (FillableCell) cells[fillCell.coord.row + dir.getOffset().row][fillCell.coord.col + dir.getOffset().col];
+                            if (fillCellnext.getPipe().isPresent()) {
+                                System.out.println("CheckPath found fillableCell" + fillCellnext.coord.row +fillCellnext.coord.col);
+                                if (!visitedCells.contains(fillCellnext) && !nextCells.contains(fillCellnext) && fillCellnext.getPipe().orElseThrow().toSingleChar() != '.') {
+                                    for (Direction dirNext : fillCellnext.getPipe().orElseThrow().getConnections()) {
+                                        if (dirNext.equals(dir.getOpposite())) {
+                                            nextCells.add(fillCellnext);
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
+
                 visitedCells.add(fillCell);
             }
         System.out.println("CheckPathend");
@@ -435,7 +442,8 @@ public class Map {
      */
     public boolean hasLost() {
         // TODO - DONE
-        if(filledTurn==true)return false;
+        if(filledTurn==true){System.out.println("I'm called");
+        return false;}
         return true;
     }
 }

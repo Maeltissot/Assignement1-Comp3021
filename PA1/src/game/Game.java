@@ -123,9 +123,10 @@ public class Game {
      */
     public boolean undoStep() {
         // TODO - DONE
-        if(cellStack.pop() == null) return false;
         FillableCell cell = cellStack.pop();
+        if(cell == null) return false;
         Pipe pipe = cell.getPipe().orElseThrow();
+        map.undo(cell.coord);
         pipeQueue.undo(pipe);
         delayBar.countdown();
         return true;
@@ -166,7 +167,7 @@ public class Game {
      */
     public boolean hasWon() {
         // TODO - DONE
-        if(map.checkPath() && !map.hasLost())return true;
+        if(map.checkPath())return true;
         return false;
     }
 
