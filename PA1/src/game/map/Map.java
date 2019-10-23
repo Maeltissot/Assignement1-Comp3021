@@ -114,6 +114,10 @@ public class Map {
         Random randSourceRow = new Random();
         int randRow = randSourceRow.nextInt((rows - 2 - 1) + 1) + 1;
         int randCol = randSourceCol.nextInt((cols - 2 - 1) + 1) + 1;
+        if(randCol==sinkCell.coord.col+sinkCell.pointingTo.getOpposite().getOffset().col && randRow == sinkCell.coord.row + sinkCell.pointingTo.getOpposite().getOffset().row){
+            randCol += randCol + sinkCell.pointingTo.getOpposite().getOffset().col;
+            randRow += randRow + sinkCell.pointingTo.getOpposite().getOffset().row;
+        }
         Direction dirScource = null;
         Coordinate coordSc = new Coordinate(randRow, randCol);
         if (randRow == rows - 2) { dirScource = Direction.UP; }
