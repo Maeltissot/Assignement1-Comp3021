@@ -69,4 +69,5 @@ class GameTestSample {
         assertFalse(map.placePipe(1, 'B'));
         assertEquals(0, map.getNumOfSteps());
     }
+
 }

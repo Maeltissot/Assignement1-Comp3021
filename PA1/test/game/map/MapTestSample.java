@@ -115,4 +115,26 @@ class MapTestSample {
         final var secondCell = (FillableCell) map.cells[2][1];
         assertFalse(() -> secondCell.getPipe().isPresent() && secondCell.getPipe().get().getFilled());
     }
+
+    @Test
+    void MissingSinkPipe() {
+        final var cellRep =
+                "WWWW\n" +
+                        "W.<W\n" +
+                        "W..W\n" +
+                        "WWWW";
+        final var map = assertThrows(IllegalCallerException.class, () -> Map.fromString(4, 4, cellRep));
+
+    }
+    @Test
+    void MissingSourcePipe() {
+        final var cellRep =
+                "WWWW\n" +
+                        "W..W\n" +
+                        "W..>\n" +
+                        "WWWW";
+        final var map = assertThrows(IllegalCallerException.class, () -> Map.fromString(4, 4, cellRep));
+
+    }
+
 }

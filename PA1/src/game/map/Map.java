@@ -115,8 +115,10 @@ public class Map {
         int randRow = randSourceRow.nextInt((rows - 2 - 1) + 1) + 1;
         int randCol = randSourceCol.nextInt((cols - 2 - 1) + 1) + 1;
         if(randCol==sinkCell.coord.col+sinkCell.pointingTo.getOpposite().getOffset().col && randRow == sinkCell.coord.row + sinkCell.pointingTo.getOpposite().getOffset().row){
-            randCol += randCol + sinkCell.pointingTo.getOpposite().getOffset().col;
-            randRow += randRow + sinkCell.pointingTo.getOpposite().getOffset().row;
+            while(randCol==sinkCell.coord.col+sinkCell.pointingTo.getOpposite().getOffset().col && randRow == sinkCell.coord.row + sinkCell.pointingTo.getOpposite().getOffset().row){
+                randRow = randSourceRow.nextInt((rows - 2 - 1) + 1) + 1;
+                randCol = randSourceCol.nextInt((cols - 2 - 1) + 1) + 1;
+            }
         }
         Direction dirScource = null;
         Coordinate coordSc = new Coordinate(randRow, randCol);
@@ -160,6 +162,8 @@ public class Map {
         this.rows = rows;
         this.cols = cols;
         this.cells = cells;
+        this.sinkCell =null;
+        this.sourceCell=null;
 
         for(int i =0;i<cells.length;i++){
             for(int j=0;j<cells[0].length;j++){
@@ -173,6 +177,9 @@ public class Map {
                     }
                 }
             }
+        }
+        if(sourceCell==null || sinkCell==null){
+            throw new IllegalCallerException("The given table is missing either a sink cell or a source cell");
         }
     }
 
